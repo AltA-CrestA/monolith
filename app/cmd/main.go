@@ -12,9 +12,9 @@ func main() {
 	cfg := config.GetConfig()
 
 	log.Print("logger initializing")
-	logger := logging.GetLogger()
+	logger := logging.GetLogger(cfg.AppConfig.LogLevel)
 
-	a, err := app.NewApp(cfg, logger)
+	a, err := app.NewApp(cfg, &logger)
 	if err != nil {
 		logger.Fatal(err)
 	}

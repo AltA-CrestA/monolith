@@ -3,6 +3,7 @@ module monolith
 go 1.17
 
 require (
+	github.com/Masterminds/squirrel v1.5.2
 	github.com/ilyakaznacheev/cleanenv v1.2.6
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/rs/cors v1.8.2
@@ -23,7 +24,8 @@ require (
 	github.com/jackc/pgtype v1.11.0 // indirect
 	github.com/jackc/puddle v1.2.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
-	github.com/pkg/errors v0.8.1 // indirect
+	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
+	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/net v0.0.0-20220425223048-2871e0cb64e4 // indirect
@@ -38,9 +40,7 @@ require (
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/go-openapi/spec v0.20.6 // indirect
 	github.com/go-openapi/swag v0.21.1 // indirect
-	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgconn v1.12.1
-	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect

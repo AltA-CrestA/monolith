@@ -3,66 +3,49 @@ package logging
 import (
 	"fmt"
 	"github.com/sirupsen/logrus"
-	"io"
+	"log"
 	"os"
 	"path"
 	"runtime"
+	"sync"
 )
-
-type writerHook struct {
-	Writer   []io.Writer
-	LogLevel []logrus.Level
-}
-
-func (hook *writerHook) Fire(entry *logrus.Entry) error {
-	line, err := entry.String()
-	if err != nil {
-		return err
-	}
-	for _, w := range hook.Writer {
-		w.Write([]byte(line))
-	}
-	return err
-}
-
-func (hook *writerHook) Levels() []logrus.Level {
-	return hook.LogLevel
-}
-
-var e *logrus.Entry
 
 type Logger struct {
 	*logrus.Entry
 }
 
-func GetLogger() *Logger {
-	return &Logger{e}
+func (s *Logger) ExtraFields(fields map[string]interface{}) *Logger {
+	return &Logger{s.WithFields(fields)}
 }
 
-func (l *Logger) GetLoggerWithField(k string, v interface{}) *Logger {
-	return &Logger{l.WithField(k, v)}
-}
+var instance Logger
+var once sync.Once
 
-func init() {
-	l := logrus.New()
-	l.SetReportCaller(true)
-	l.Formatter = &logrus.TextFormatter{
-		CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
-			filename := path.Base(frame.File)
-			return fmt.Sprintf("%s()", frame.Function), fmt.Sprintf("%s:%d", filename, frame.Line)
-		},
-		DisableColors: false,
-		FullTimestamp: true,
-	}
+func GetLogger(level string) Logger {
+	once.Do(func() {
+		logrusLevel, err := logrus.ParseLevel(level)
+		if err != nil {
+			log.Fatalln(err)
+		}
 
-	l.SetOutput(io.Discard)
+		l := logrus.New()
+		l.SetReportCaller(true)
+		l.Formatter = &logrus.TextFormatter{
+			CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
+				filename := path.Base(frame.File)
+				return fmt.Sprintf("%s()", frame.Function), fmt.Sprintf("%s:%d", filename, frame.Line)
+			},
+			DisableColors: false,
+			FullTimestamp: true,
+		}
 
-	l.AddHook(&writerHook{
-		Writer:   []io.Writer{os.Stdout},
-		LogLevel: logrus.AllLevels,
+		l.SetOutput(os.Stdout)
+		l.SetLevel(logrusLevel)
+
+		l.SetLevel(logrus.TraceLevel)
+
+		instance = Logger{logrus.NewEntry(l)}
 	})
 
-	l.SetLevel(logrus.TraceLevel)
-
-	e = logrus.NewEntry(l)
+	return instance
 }
